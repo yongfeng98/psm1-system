@@ -1,0 +1,242 @@
+<div class="wrapper">
+
+  <app-header></app-header>
+  
+  <div *ngIf="es.dataLoaded">
+    <div style="padding: 1rem; margin: 1rem; background-color: grey; display: flex; flex-direction: column;">
+      <div style="display: flex; align-items: center;">
+        <h1 style="margin: 0;">Academic Programs</h1>
+        <button style="margin: 0 1rem;" mat-raised-button (click)="es.showCreateAcademicProgram = !es.showCreateAcademicProgram" color="primary">Create</button>
+      </div>
+      <div style="display: flex; align-items: center; flex-wrap: wrap;">
+        <mat-card *ngIf="es.showCreateAcademicProgram" style="max-width: 400px; margin: 1rem;">
+          <mat-card-header>
+            <mat-card-title style="padding-bottom: 1rem;">Create Academic Program</mat-card-title>
+            <mat-card-subtitle></mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+
+            <mat-form-field style="width: 100%;">
+              <mat-label>Academic Program Code</mat-label>
+              <input matInput placeholder="DE" [(ngModel)]="es.programCode">
+            </mat-form-field>
+
+            <mat-form-field style="width: 100%;">
+              <mat-label>Academic Program Name</mat-label>
+              <input matInput placeholder="Data Engineering" [(ngModel)]="es.programName">
+            </mat-form-field>
+
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button (click)="es.createAcademicProgram()">Create</button>
+          </mat-card-actions>
+        </mat-card>
+        <mat-card *ngFor="let program of es.programArray; let i=index" style="max-width: 400px; margin: 1rem;">
+          <mat-card-header>
+            <mat-card-title></mat-card-title>
+            <mat-card-subtitle></mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+
+            <div *ngIf="!program.edit">
+              <h3>Academic Program Code :</h3>
+              <p>{{program.programCode}}</p>
+            </div>
+
+            <div *ngIf="!program.edit">
+              <h3>Academic Program Name :</h3>
+              <p>{{program.programName}}</p>
+            </div>
+
+            <div *ngIf="program.edit">
+              <mat-form-field style="width: 100%;">
+                <mat-label>Academic Program Code</mat-label>
+                <input matInput placeholder="DE" [(ngModel)]="es.editProgram[i].programCode">
+              </mat-form-field>
+
+              <mat-form-field style="width: 100%;">
+                <mat-label>Academic Program Name</mat-label>
+                <input matInput placeholder="Data Engineering" [(ngModel)]="es.editProgram[i].programName">
+              </mat-form-field>
+            </div>
+
+          </mat-card-content>
+          <mat-card-actions *ngIf="!program.edit">
+            <button mat-raised-button (click)="program.edit = !program.edit">Edit</button>
+            <button mat-raised-button color="warn" (click)="es.deleteAcademicProgram(program)">Delete</button>
+          </mat-card-actions>
+
+          <mat-card-actions *ngIf="program.edit">
+            <button mat-raised-button color="primary" (click)="es.editAcademicProgram(i)">Save</button>
+            <button mat-raised-button (click)="program.edit = !program.edit">Back</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+
+
+
+
+
+    <div style="padding: 1rem; margin: 1rem; background-color: blue; display: flex; flex-direction: column;">
+      <div style="display: flex; align-items: center;">
+        <h1 style="margin: 0;">Lecturer List</h1>
+        <button style="margin: 0 1rem;" mat-raised-button (click)="es.showCreateLecturer = !es.showCreateLecturer" color="primary">Create</button>
+      </div>
+      <div style="display: flex; align-items: center; flex-wrap: wrap;">
+        <mat-card *ngIf="es.showCreateLecturer" style="max-width: 400px; margin: 1rem;">
+          <mat-card-header>
+            <mat-card-title style="padding-bottom: 1rem;">Create Lecturer</mat-card-title>
+            <mat-card-subtitle></mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+
+            <mat-form-field style="width: 100%;">
+              <mat-label>Lecturer Name</mat-label>
+              <input matInput placeholder="" [(ngModel)]="es.lecturerName">
+            </mat-form-field>
+
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button (click)="es.createLecturer()">Create</button>
+          </mat-card-actions>
+        </mat-card>
+        <mat-card *ngFor="let lecturer of es.lecturerArray; let i=index" style="max-width: 400px; margin: 1rem;">
+          <mat-card-header>
+            <mat-card-title></mat-card-title>
+            <mat-card-subtitle></mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+
+            <div *ngIf="!lecturer.edit">
+              <h3>Name :</h3>
+              <p>{{lecturer.lecturerName}}</p>
+            </div>
+
+            <div *ngIf="lecturer.edit">
+              <mat-form-field style="width: 100%;">
+                <mat-label>Name</mat-label>
+                <input matInput placeholder="" [(ngModel)]="es.editLecturer[i].lecturerName">
+              </mat-form-field>
+
+            </div>
+
+          </mat-card-content>
+          <mat-card-actions *ngIf="!lecturer.edit">
+            <button mat-raised-button (click)="lecturer.edit = !lecturer.edit">Edit</button>
+            <button mat-raised-button color="warn" (click)="es.deleteLecturer(lecturer)">Delete</button>
+          </mat-card-actions>
+
+          <mat-card-actions *ngIf="lecturer.edit">
+            <button mat-raised-button color="primary" (click)="es.editLecturerList(i)">Save</button>
+            <button mat-raised-button (click)="lecturer.edit = !lecturer.edit">Back</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+
+
+
+
+    <div style="padding: 1rem; margin: 1rem; background-color: green; display: flex; flex-direction: column;">
+      <div style="display: flex; align-items: center;">
+        <h1 style="margin: 0;">Committee Member</h1>
+        <button style="margin: 0 1rem;" mat-raised-button (click)="es.showCreateCommittee = !es.showCreateCommittee" color="primary">Create</button>
+      </div>
+      <div style="display: flex; align-items: center; flex-wrap: wrap;">
+        <mat-card *ngIf="es.showCreateCommittee" style="max-width: 400px; margin: 1rem;">
+          <mat-card-header>
+            <mat-card-title style="padding-bottom: 1rem;">Create Committee</mat-card-title>
+            <mat-card-subtitle></mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Lecturer Name</mat-label>
+              <mat-select [(ngModel)]="es.committeeLecturer">
+                <mat-option *ngFor="let lecturer of es.lecturerArray" [value]="lecturer.lecturerName">
+                  {{lecturer.lecturerName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Program Name</mat-label>
+              <mat-select [(ngModel)]="es.committeeProgram">
+                <mat-option *ngFor="let program of es.programArray" [value]="program.programName">
+                  {{program.programName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button (click)="es.createCommittee()">Create</button>
+          </mat-card-actions>
+        </mat-card>
+        <mat-card *ngFor="let committee of es.committeeArray; let i=index" style="max-width: 400px; margin: 1rem;">
+          <mat-card-header>
+            <mat-card-title></mat-card-title>
+            <mat-card-subtitle></mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+
+            <div *ngIf="!committee.edit">
+              <h3>Lecturer Name :</h3>
+              <p>{{committee.committeeLecturer}}</p>
+            </div>
+
+            <div *ngIf="!committee.edit">
+              <h3>Program Name :</h3>
+              <p>{{committee.committeeProgram}}</p>
+            </div>
+
+            <div *ngIf="committee.edit">
+              <mat-form-field appearance="fill">
+                <mat-label>Lecturer Name</mat-label>
+                <mat-select [(ngModel)]="es.editCommittee[i].committeeLecturer">
+                  <mat-option *ngFor="let lecturer of es.lecturerArray" [value]="lecturer.lecturerName">
+                    {{lecturer.lecturerName}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Program Name</mat-label>
+                <mat-select [(ngModel)]="es.editCommittee[i].committeeProgram">
+                  <mat-option *ngFor="let program of es.programArray" [value]="program.programName">
+                    {{program.programName}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+            </div>
+
+          </mat-card-content>
+          <mat-card-actions *ngIf="!committee.edit">
+            <button mat-raised-button (click)="committee.edit = !committee.edit">Edit</button>
+            <button mat-raised-button color="warn" (click)="es.deleteCommittee(committee)">Delete</button>
+          </mat-card-actions>
+
+          <mat-card-actions *ngIf="committee.edit">
+            <button mat-raised-button color="primary" (click)="es.editCommitteeMember(i)">Save</button>
+            <button mat-raised-button (click)="committee.edit = !committee.edit">Back</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+    
+  </div>
+
+  <div *ngIf="!es.dataLoaded">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  
+</div>

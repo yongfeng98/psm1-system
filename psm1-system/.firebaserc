@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "dctapp-71345": {
+      "hosting": {
+        "psm1-system": [
+          "dctapp-71345"
+        ]
+      }
+    }
+  }
+}
