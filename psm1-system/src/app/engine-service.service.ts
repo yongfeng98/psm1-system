@@ -1,11 +1,30 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import * as CryptoJS from 'crypto-js';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class EngineServiceService {
+
+	currentUser : any;
+	// currentRole : any = 'admin'
+	// currentRole : any = 'psm-committee'
+	currentRole : any = 'student'
+	loggedIn : boolean = false;
+	registerStudent : boolean = false;
+	registerLoading : boolean = false;
+
+	username : any;
+	password : any;
+	confirmPassword : any;
+	name : any;
+	matricNumber : any;
+
+	errorMessage : any = '';
+
+	studentArray : any = [];
 
 	dataLoaded : boolean = false;
 
@@ -26,15 +45,147 @@ export class EngineServiceService {
 	committeeLecturer : any;
 	editCommittee : any;
 
+
+	showApplySupervisor : boolean = false;
+	applicationArray : any;
+	applicationSupervisor : any;
+
 	constructor(
 		private afs:AngularFirestore,
 		private _snackBar: MatSnackBar
 	) {
 
-		Promise.all([this.readAcademicProgram(), this.readLecturer(), this.readCommittee()]).then((data:any) => {
+		// window.localStorage.removeItem("user");
+
+		const user = window.localStorage.getItem('user')
+		if(user) {
+			this.currentUser = JSON.parse(user);
+			this.currentRole = window.localStorage.getItem('role');
+			console.log(this.currentRole);
+			this.loggedIn = !this.loggedIn;
+
+		}
+
+		Promise.all([this.readAcademicProgram(), this.readLecturer(), this.readCommittee(), this.readStudent(), this.readApplication()]).then((data:any) => {
 			console.log('dataLoaded', this.dataLoaded, data);
 			this.dataLoaded = true;
+
+			for(let application of this.applicationArray) {
+				for(let lecturer of this.lecturerArray) {
+					if(application.applicationSupervisor == lecturer.lecturerId) {
+						application.applicationSupervisor = lecturer;
+					}	
+				}
+			}
+
+
 		})
+	}
+
+	readStudent() {
+		return new Promise((resolve:any) => {
+			this.afs.collection('student').valueChanges({idField:'studentId'}).subscribe((studentArray:any) => {
+				this.studentArray = [];
+				this.studentArray = studentArray;
+
+				resolve(true);
+			})
+		})
+	}
+
+	validRegistration() {
+		console.log('check registration');
+
+		if(this.username == null || this.username.includes(' ') || this.username == '') {
+			this.errorMessage = 'Username cannot be empty.'
+			console.log(this.errorMessage);
+			return false
+		}
+
+		if(this.password == null || this.password.includes(' ') || this.password == '') {
+			this.errorMessage = 'Password cannot be empty.'
+			console.log(this.errorMessage);
+			return false
+		}
+
+		if(this.password != this.confirmPassword) {
+			this.errorMessage = 'Wrong confirm password.'
+			console.log(this.errorMessage);
+			return false
+		}
+
+		if(this.name == null || this.name == '') {
+			this.errorMessage = 'Full name cannot be empty.'
+			console.log(this.errorMessage);
+			return false
+		}
+
+		if(this.matricNumber == null || this.matricNumber.includes(' ') || this.matricNumber == '') {
+			this.errorMessage = 'Matric number cannot be empty.'
+			console.log(this.errorMessage);
+			return false
+		}
+
+		for(let student of this.studentArray) {
+			if(student.username == this.username) {
+				this.errorMessage = 'Username exist. Please reenter username.'
+				console.log(this.errorMessage);
+				return false;
+			}
+		}
+
+		return true;
+
+	}
+
+	register() {
+		console.log('register');
+
+		this.registerLoading = true;
+
+		if(this.validRegistration()) {
+			this.afs.collection('student').add({
+				fullname: this.name,
+				username: this.username,
+				password: CryptoJS.AES.encrypt(this.password.trim(), 'psmsystem').toString(),
+				matricNumber: this.matricNumber,
+			}).then(() => {
+				this.registerLoading = !this.registerLoading;
+				this.name = '';
+				this.username = '';
+				this.password = '';
+				this.confirmPassword = '';
+				this.matricNumber = '';
+				this.registerStudent = !this.registerStudent;
+				this.loggedIn = !this.loggedIn;
+				this.openSnackBar('Student register successfully.','Dismiss');
+			})
+		}
+	}
+
+	logIn() {
+		console.log('log in')
+		for(let student of this.studentArray) {
+			const pass = student.password;
+
+			if(this.username === student.username && this.password === CryptoJS.AES.decrypt(pass.trim(), 'psmsystem').toString(CryptoJS.enc.Utf8)) {
+				this.loggedIn = !this.loggedIn;
+				this.openSnackBar(`Welcome ${student.fullname}`,'Dismiss');
+				window.localStorage.setItem("user", JSON.stringify(student));
+				window.localStorage.setItem("role", 'student');
+				this.currentUser = student;
+				this.currentRole = 'student';
+				return;
+			}
+		}
+
+		this.openSnackBar('Wrong username or password.','Dismiss');
+	}
+
+	logOut() {
+		this.currentUser = null;
+		this.currentRole = null;
+		window.localStorage.removeItem("user");
 	}
 
 	readAcademicProgram() {
@@ -189,6 +340,43 @@ export class EngineServiceService {
 			})
 		}
 		
+	}
+
+
+	readApplication() {
+		return new Promise((resolve:any) => {
+			this.afs.collection('student-supervisor', ref => ref.where('applicationStudent','==',this.currentUser.studentId).orderBy('applicationTimestamp','desc')).valueChanges({idField:'applicationId'}).subscribe((applicationArray:any) => {
+				this.applicationArray = [];
+				this.applicationArray = applicationArray;
+				resolve(true);
+			})
+		})
+	}
+
+	applySupervisor() {
+
+		this.afs.collection('student-supervisor').add({
+			applicationSupervisor: this.applicationSupervisor,
+			applicationStatus: 'pending',
+			applicationStudent: this.currentUser.studentId,
+			applicationTimestamp: new Date(Date.now())
+		}).then(() => {
+			this.showApplySupervisor = !this.showApplySupervisor;
+			this.openSnackBar('Application Recorded.','Dismiss');
+		})
+	}
+
+	studentAllowToApplySupervisor() {
+		for(let application of this.applicationArray) {
+			if(application.applicationStatus === 'pending' || application.applicationStatus === 'approved') {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	viewGeneralAgreement() {
+		window.open("https://firebasestorage.googleapis.com/v0/b/dctapp-71345.appspot.com/o/GENERAL%20AGREEMEN1.pdf?alt=media&token=651a299b-2d3a-4bc5-8115-abbf7b9b6dba", '_blank');
 	}
 
 
