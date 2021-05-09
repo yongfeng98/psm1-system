@@ -1,4 +1,4 @@
-<div *ngIf="es.currentRole == 'admin'" class="wrapper">
+<div *ngIf="es.currentRole == 'admin' || es.currentRole == 'psm-committee'" class="wrapper">
 
   <app-header></app-header>
   
@@ -95,10 +95,45 @@
 
           <mat-card-content>
 
+
+
             <mat-form-field style="width: 100%;">
-              <mat-label>Lecturer Name</mat-label>
+              <mat-label>Full Name</mat-label>
               <input matInput placeholder="" [(ngModel)]="es.lecturerName">
             </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Academic Program</mat-label>
+              <mat-select [(ngModel)]="es.lecturerProgram">
+                <mat-option *ngFor="let program of es.programArray" [value]="program.programName">
+                  {{program.programName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field style="width: 100%;">
+              <mat-label>Username</mat-label>
+              <input matInput placeholder="" [(ngModel)]="es.lecturerUsername">
+            </mat-form-field>
+
+            <mat-form-field style="width: 100%;">
+              <mat-label>Password</mat-label>
+              <input type="password" matInput placeholder="" [(ngModel)]="es.lecturerPassword">
+            </mat-form-field>
+
+            <mat-form-field style="width: 100%;">
+              <mat-label>Confirm Password</mat-label>
+              <input type="password" matInput placeholder="" [(ngModel)]="es.lecturerConfirmPassword">
+            </mat-form-field>
+
+            <mat-form-field style="width: 100%;">
+              <mat-label>Staff ID</mat-label>
+              <input matInput placeholder="" [(ngModel)]="es.lecturerStaffId">
+            </mat-form-field>
+
+
+
+            <p style="color: red;">{{es.errorMessage}}</p>
 
           </mat-card-content>
           <mat-card-actions>
@@ -119,6 +154,11 @@
             </div>
 
             <div *ngIf="!lecturer.edit">
+              <h3>Academic Program :</h3>
+              <p>{{lecturer.lecturerProgram}}</p>
+            </div>
+
+            <div *ngIf="!lecturer.edit">
               <h3>Domain :</h3>
               <p>{{lecturer.lecturerDomain | titlecase}}</p>
             </div>
@@ -128,6 +168,15 @@
               <mat-form-field style="width: 100%;">
                 <mat-label>Name</mat-label>
                 <input matInput placeholder="" [(ngModel)]="es.editLecturer[i].lecturerName">
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Academic Program</mat-label>
+                <mat-select [(ngModel)]="es.editLecturer[i].lecturerProgram">
+                  <mat-option *ngFor="let program of es.programArray" [value]="program.programName">
+                    {{program.programName}}
+                  </mat-option>
+                </mat-select>
               </mat-form-field>
 
               <mat-form-field *ngIf="es.currentRole == 'psm-committee'" appearance="fill">
@@ -149,6 +198,8 @@
           </mat-card-content>
           <mat-card-actions *ngIf="!lecturer.edit">
             <button mat-raised-button (click)="lecturer.edit = !lecturer.edit">Edit</button>
+            <button mat-raised-button color="primary" *ngIf="lecturer.lecturerRole == 'lecturer'" (click)="es.assignCommittee(lecturer)">Assign As PSM Committee</button>
+            <button mat-raised-button color="warn" *ngIf="lecturer.lecturerRole == 'psm-committee'" (click)="es.unassignCommittee(lecturer)">Remove From PSM Committee</button>
             <button mat-raised-button color="warn" (click)="es.deleteLecturer(lecturer)">Delete</button>
           </mat-card-actions>
 
@@ -163,44 +214,14 @@
 
 
 
-    <div *ngIf="es.currentRole == 'admin'" style="padding: 1rem; margin: 1rem; background-color: green; display: flex; flex-direction: column;">
+    <div *ngIf="es.currentRole == 'psm-committee'" style="padding: 1rem; margin: 1rem; background-color: green; display: flex; flex-direction: column;">
       <div style="display: flex; align-items: center;">
-        <h1 style="margin: 0;">Committee Member</h1>
-        <button style="margin: 0 1rem;" mat-raised-button (click)="es.showCreateCommittee = !es.showCreateCommittee" color="primary">Create</button>
+        <h1 style="margin: 0;">Student List</h1>
       </div>
+
+
       <div style="display: flex; align-items: center; flex-wrap: wrap;">
-        <mat-card *ngIf="es.showCreateCommittee" style="max-width: 400px; margin: 1rem;">
-          <mat-card-header>
-            <mat-card-title style="padding-bottom: 1rem;">Create Committee</mat-card-title>
-            <mat-card-subtitle></mat-card-subtitle>
-          </mat-card-header>
-
-          <mat-card-content>
-
-            <mat-form-field appearance="fill">
-              <mat-label>Lecturer Name</mat-label>
-              <mat-select [(ngModel)]="es.committeeLecturer">
-                <mat-option *ngFor="let lecturer of es.lecturerArray" [value]="lecturer.lecturerName">
-                  {{lecturer.lecturerName}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill">
-              <mat-label>Program Name</mat-label>
-              <mat-select [(ngModel)]="es.committeeProgram">
-                <mat-option *ngFor="let program of es.programArray" [value]="program.programName">
-                  {{program.programName}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-
-          </mat-card-content>
-          <mat-card-actions>
-            <button mat-raised-button (click)="es.createCommittee()">Create</button>
-          </mat-card-actions>
-        </mat-card>
-        <mat-card *ngFor="let committee of es.committeeArray; let i=index" style="max-width: 400px; margin: 1rem;">
+        <mat-card *ngFor="let student of es.studentArray; let i=index" style="max-width: 400px; margin: 1rem;">
           <mat-card-header>
             <mat-card-title></mat-card-title>
             <mat-card-subtitle></mat-card-subtitle>
@@ -208,47 +229,101 @@
 
           <mat-card-content>
 
-            <div *ngIf="!committee.edit">
-              <h3>Lecturer Name :</h3>
-              <p>{{committee.committeeLecturer}}</p>
+            <div>
+              <h3>Name :</h3>
+              <p>{{student.fullname}}</p>
             </div>
 
-            <div *ngIf="!committee.edit">
-              <h3>Program Name :</h3>
-              <p>{{committee.committeeProgram}}</p>
-            </div>
-
-            <div *ngIf="committee.edit">
-              <mat-form-field appearance="fill">
-                <mat-label>Lecturer Name</mat-label>
-                <mat-select [(ngModel)]="es.editCommittee[i].committeeLecturer">
-                  <mat-option *ngFor="let lecturer of es.lecturerArray" [value]="lecturer.lecturerName">
-                    {{lecturer.lecturerName}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-
-              <mat-form-field appearance="fill">
-                <mat-label>Program Name</mat-label>
-                <mat-select [(ngModel)]="es.editCommittee[i].committeeProgram">
-                  <mat-option *ngFor="let program of es.programArray" [value]="program.programName">
-                    {{program.programName}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-
+            <div>
+              <h3>Matric Number :</h3>
+              <p>{{student.matricNumber}}</p>
             </div>
 
           </mat-card-content>
-          <mat-card-actions *ngIf="!committee.edit">
-            <button mat-raised-button (click)="committee.edit = !committee.edit">Edit</button>
-            <button mat-raised-button color="warn" (click)="es.deleteCommittee(committee)">Delete</button>
+          <mat-card-actions>
+            <button mat-raised-button color="warn" (click)="es.deleteStudent(student)">Delete</button>
           </mat-card-actions>
 
-          <mat-card-actions *ngIf="committee.edit">
-            <button mat-raised-button color="primary" (click)="es.editCommitteeMember(i)">Save</button>
-            <button mat-raised-button (click)="committee.edit = !committee.edit">Back</button>
+        </mat-card>
+      </div>
+    </div>
+
+
+
+    <div *ngIf="es.currentRole == 'psm-committee'" style="padding: 1rem; margin: 1rem; background-color: green; display: flex; flex-direction: column;">
+      <div style="display: flex; align-items: center;">
+        <h1 style="margin: 0;">Supervisor Application</h1>
+      </div>
+
+
+      <div style="display: flex; align-items: center; flex-wrap: wrap;">
+        <mat-card *ngFor="let application of es.applicationArray; let i=index" style="max-width: 400px; margin: 1rem;">
+          <mat-card-header>
+            <mat-card-title></mat-card-title>
+            <mat-card-subtitle></mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+
+
+
+            <div>
+              <h3><strong>Application Information</strong></h3>
+            </div>
+
+            <div>
+              <h3>ID : {{application.applicationId}}</h3>
+            </div>
+
+            <div>
+              <h3>Time : {{application.applicationTimestamp.toDate() | date: 'dd MMM yyyy h:mm:ss a' }}</h3>
+            </div>
+
+            <hr>
+
+            <div>
+              <h3><strong>Student Information</strong></h3>
+            </div>
+
+            <div>
+              <h3>Name :</h3>
+              <p>{{application.applicationStudent.fullname}}</p>
+            </div>
+
+            <div>
+              <h3>Matric Number :</h3>
+              <p>{{application.applicationStudent.matricNumber}}</p>
+            </div>
+
+            <hr>
+
+            <div>
+              <h3><strong>Supervisor Information</strong></h3>
+            </div>
+
+            <div>
+              <h3>Name :</h3>
+              <p>{{application.applicationSupervisor.lecturerName}}</p>
+            </div>
+
+            <div>
+              <h3>Program :</h3>
+              <p>{{application.applicationSupervisor.lecturerProgram}}</p>
+            </div>
+
+            <div>
+              <h3>Domain :</h3>
+              <p>{{application.applicationSupervisor.lecturerDomain | titlecase}}</p>
+            </div>
+
+
+
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary" (click)="es.approveApplication(application)">Approve</button>
+            <button mat-raised-button color="warn" (click)="es.rejectApplication(application)">Reject</button>
           </mat-card-actions>
+
         </mat-card>
       </div>
     </div>
@@ -393,61 +468,69 @@
 
   <h1>Student</h1>
 
-
   <button [disabled]="es.studentAllowToApplySupervisor()" style="margin: 0 1rem;" mat-raised-button (click)="es.showApplySupervisor = !es.showApplySupervisor" color="primary">Apply for Supervisor</button>
 
-  <mat-card *ngIf="es.showApplySupervisor" style="max-width: 400px; margin: 1rem;">
-    <mat-card-header>
-      <mat-card-title style="padding-bottom: 1rem;">Apply for Supervisor</mat-card-title>
-      <mat-card-subtitle></mat-card-subtitle>
-    </mat-card-header>
-
-    <mat-card-content>
-
-      <mat-form-field appearance="fill">
-        <mat-label>Lecturer Name</mat-label>
-        <mat-select [(ngModel)]="es.applicationSupervisor">
-          <mat-option *ngFor="let lecturer of es.lecturerArray" [value]="lecturer.lecturerId">
-            {{lecturer.lecturerName}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+  <div style="display: flex; align-items: center; flex-wrap: wrap;">
 
 
+    <mat-card *ngIf="es.showApplySupervisor" style="max-width: 400px; margin: 1rem;">
+      <mat-card-header>
+        <mat-card-title style="padding-bottom: 1rem;">Apply for Supervisor</mat-card-title>
+        <mat-card-subtitle></mat-card-subtitle>
+      </mat-card-header>
 
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-raised-button (click)="es.applySupervisor()">Apply</button>
-    </mat-card-actions>
-  </mat-card>
+      <mat-card-content>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Lecturer Name</mat-label>
+          <mat-select [(ngModel)]="es.applicationSupervisor">
+            <mat-option *ngFor="let lecturer of es.lecturerArray" [value]="lecturer.lecturerId">
+              {{lecturer.lecturerName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
 
 
 
-  <mat-card *ngFor="let application of es.applicationArray; let i=index" style="max-width: 400px; margin: 1rem;">
-    <mat-card-header>
-      <mat-card-title style="padding-bottom: 1rem;">Application {{i+1}}</mat-card-title>
-      <mat-card-subtitle></mat-card-subtitle>
-    </mat-card-header>
-
-    <mat-card-content>
-
-      <div>
-        <h3>Supervisor :</h3>
-        <p>{{application.applicationSupervisor.lecturerName}}</p>
-      </div>
-
-      <div>
-        <h3>Status :</h3>
-        <p>{{application.applicationStatus | titlecase}}</p>
-      </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button (click)="es.applySupervisor()">Apply</button>
+      </mat-card-actions>
+    </mat-card>
 
 
 
-    </mat-card-content>
-    <mat-card-actions>
-      <button *ngIf="application.applicationStatus === 'approved'" mat-raised-button (click)="es.viewGeneralAgreement()">View General Agreement</button>
-    </mat-card-actions>
-  </mat-card>
+    <mat-card *ngFor="let application of es.applicationArray; let i=index" style="max-width: 400px; margin: 1rem;">
+      <mat-card-header>
+        <mat-card-title style="padding-bottom: 1rem;">Application {{es.applicationArray.length - i}}</mat-card-title>
+        <mat-card-subtitle></mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+
+        <div>
+          <h3>Supervisor :</h3>
+          <p>{{application.applicationSupervisor.lecturerName}}</p>
+        </div>
+
+        <div>
+          <h3>Status :</h3>
+          <p>{{application.applicationStatus | titlecase}}</p>
+        </div>
+
+
+
+      </mat-card-content>
+      <mat-card-actions>
+        <button *ngIf="application.applicationStatus === 'approved'" mat-raised-button (click)="es.viewGeneralAgreement()">View General Agreement</button>
+      </mat-card-actions>
+    </mat-card>
+    
+  </div>
+
+  
+
+  
   
 </div>
 
