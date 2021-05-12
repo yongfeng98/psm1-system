@@ -22,12 +22,18 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
-
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { SessionSemesterPipePipe } from './session-semester-pipe.pipe';
+import { ProposalFilterPipePipe } from './proposal-filter-pipe.pipe';
+import { LecturerFilterPipePipe } from './lecturer-filter-pipe.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HeaderComponent
+    HeaderComponent,
+    SessionSemesterPipePipe,
+    ProposalFilterPipePipe,
+    LecturerFilterPipePipe
   ],
   imports: [
     BrowserModule,
@@ -46,7 +52,8 @@ import { MatSortModule } from '@angular/material/sort';
     MatProgressSpinnerModule,
     MatTableModule,
     MatPaginatorModule,
-    MatSortModule
+    MatSortModule,
+    MatCheckboxModule
   ],
   providers: [],
   bootstrap: [AppComponent]
