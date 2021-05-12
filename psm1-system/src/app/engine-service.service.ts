@@ -536,7 +536,6 @@ export class EngineServiceService {
 				this.sessionEnd = '';
 
 				this.registerStudent = !this.registerStudent;
-				this.loggedIn = !this.loggedIn;
 				this.errorMessage = null;
 				this.openSnackBar('Student register successfully.','Dismiss');
 			})
@@ -1210,7 +1209,7 @@ export class EngineServiceService {
 	}
 
 	viewSupervisor() {
-		
+
 		for(let lec of this.lecturerArray) {
 			if(lec.lecturerId == this.applicationSupervisor) {
 				this.applicationSupervisorDomainView = lec.lecturerDomain;
