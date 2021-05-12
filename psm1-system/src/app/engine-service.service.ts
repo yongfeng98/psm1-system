@@ -1210,7 +1210,6 @@ export class EngineServiceService {
 	}
 
 	viewSupervisor() {
-		console.log(this.applicationSupervisor);
 		
 		for(let lec of this.lecturerArray) {
 			if(lec.lecturerId == this.applicationSupervisor) {
