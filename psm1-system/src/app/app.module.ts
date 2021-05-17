@@ -26,6 +26,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SessionSemesterPipePipe } from './session-semester-pipe.pipe';
 import { ProposalFilterPipePipe } from './proposal-filter-pipe.pipe';
 import { LecturerFilterPipePipe } from './lecturer-filter-pipe.pipe';
+import { NgSearchFilterModule } from 'ng-search-filter';
+import { MatIconModule } from '@angular/material/icon';
+import { MatExpansionModule } from '@angular/material/expansion';
+
 
 @NgModule({
   declarations: [
@@ -53,7 +57,10 @@ import { LecturerFilterPipePipe } from './lecturer-filter-pipe.pipe';
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    NgSearchFilterModule,
+    MatIconModule,
+    MatExpansionModule
   ],
   providers: [],
   bootstrap: [AppComponent]

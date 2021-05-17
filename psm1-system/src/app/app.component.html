@@ -1,4 +1,5 @@
 <div *ngIf="es.loggedIn" style="background-color: #e7ecf1; height: 100%;">
+
   <app-header *ngIf="es.loggedIn && es.dataLoaded"></app-header>
 
   <div *ngIf="es.currentRole == 'admin' || es.currentRole == 'psm-committee'">
@@ -53,19 +54,27 @@
 
             <mat-card-content>
 
-              <mat-form-field style="width: 100%;">
-                <mat-label>Academic Program Code</mat-label>
-                <input matInput placeholder="DE" [(ngModel)]="es.programCode">
-              </mat-form-field>
+              <div>
+                <mat-form-field style="width: 100%;">
+                  <mat-label>Program Code</mat-label>
+                  <input matInput placeholder="DE" [(ngModel)]="es.programCode">
+                </mat-form-field>
+                
+              </div>
+              
+              <div>
 
-              <mat-form-field style="width: 100%;">
-                <mat-label>Academic Program Name</mat-label>
-                <input matInput placeholder="Data Engineering" [(ngModel)]="es.programName">
-              </mat-form-field>
+                <mat-form-field style="width: 100%;">
+                  <mat-label>Program Name</mat-label>
+                  <input matInput placeholder="Data Engineering" [(ngModel)]="es.programName">
+                </mat-form-field>
+                
+              </div>
+              
 
             </mat-card-content>
             <mat-card-actions>
-              <button mat-raised-button (click)="es.createAcademicProgram()">Create</button>
+              <button mat-raised-button (click)="es.createAcademicProgram()" color="primary">Create</button>
             </mat-card-actions>
           </mat-card>
           <mat-card *ngFor="let program of es.programArray; let i=index" style="max-width: 400px; margin: 1rem;">
@@ -77,23 +86,31 @@
             <mat-card-content>
 
               <div *ngIf="!program.edit">
-                <h3>Program Code :</h3>
-                <p>{{program.programCode}}</p>
+
+                <mat-form-field style="width: 100%;">
+                  <mat-label>Program Code</mat-label>
+                  <input matInput placeholder="DE" [(ngModel)]="program.programCode" [readonly]="true">
+                </mat-form-field>
               </div>
 
               <div *ngIf="!program.edit">
-                <h3>Program Name :</h3>
-                <p>{{program.programName}}</p>
+
+                <mat-form-field style="width: 100%;">
+                  <mat-label>Program Name</mat-label>
+                  <input matInput placeholder="Data Engineering" [(ngModel)]="program.programName" [readonly]="true">
+                </mat-form-field>
               </div>
 
               <div *ngIf="program.edit">
                 <mat-form-field style="width: 100%;">
-                  <mat-label>Academic Program Code</mat-label>
+                  <mat-label>Program Code</mat-label>
                   <input matInput placeholder="DE" [(ngModel)]="es.editProgram[i].programCode">
                 </mat-form-field>
+              </div>
 
+              <div *ngIf="program.edit">
                 <mat-form-field style="width: 100%;">
-                  <mat-label>Academic Program Name</mat-label>
+                  <mat-label>Program Name</mat-label>
                   <input matInput placeholder="Data Engineering" [(ngModel)]="es.editProgram[i].programName">
                 </mat-form-field>
               </div>
@@ -105,8 +122,8 @@
             </mat-card-actions>
 
             <mat-card-actions *ngIf="program.edit">
-              <button mat-raised-button color="primary" (click)="es.editAcademicProgram(i)">Save</button>
               <button mat-raised-button (click)="program.edit = !program.edit">Back</button>
+              <button mat-raised-button color="primary" (click)="es.editAcademicProgram(i)">Save</button>
             </mat-card-actions>
           </mat-card>
         </div>
@@ -114,12 +131,20 @@
 
 
 
-
-
-      <div *ngIf="(es.currentRole == 'admin' || es.currentRole == 'psm-committee') && (es.adminShowLecturerPage || es.committeeShowLecturerPage)" style="padding: 1rem; margin: 1rem; background-color: #f1f1f1; display: flex; flex-direction: column; max-width: 90%; height: 100%; width: 100%;overflow-y: scroll; max-height: 75vh;">
+      <div *ngIf="(es.committeeShowLecturerPage && es.currentRole == 'psm-committee') || (es.adminShowLecturerPage && es.currentRole == 'admin')" style="padding: 1rem; margin: 1rem; background-color: #f1f1f1; display: flex; flex-direction: column; max-width: 90%; height: 100%; width: 100%;overflow-y: scroll; max-height: 75vh;">
         <div style="display: flex; align-items: center;">
           <h1 style="margin: 0;">Lecturer List</h1>
-          <button *ngIf="es.currentRole == 'admin'" style="margin: 0 1rem;" mat-raised-button (click)="es.showCreateLecturer = !es.showCreateLecturer" color="primary">Create</button>
+
+          <div style="max-width: 500px; width: 100%; padding: 0 1rem; margin: 0 1rem; border-radius: 15px; display: flex; flex-direction: row; align-items: center; background-color: #e7ecf1">
+            <mat-icon>search</mat-icon>
+            <input style="max-width: 500px; width: 100%; border-radius: 5px; background-color: #e7ecf1; padding: 1rem;" matInput placeholder="Search" [(ngModel)]="es.searchLecturer">
+          </div>
+
+
+          <div>
+            <button *ngIf="es.currentRole == 'admin'" style="margin: 0 1rem;" mat-raised-button (click)="es.showCreateLecturer = !es.showCreateLecturer" color="primary">Create</button>
+          </div>
+          
         </div>
         <div style="display: flex; align-items: center; flex-wrap: wrap;">
           <mat-card *ngIf="es.showCreateLecturer" style="max-width: 400px; margin: 1rem;">
@@ -172,10 +197,10 @@
 
             </mat-card-content>
             <mat-card-actions>
-              <button mat-raised-button (click)="es.createLecturer()">Create</button>
+              <button mat-raised-button color="primary" (click)="es.createLecturer()">Create</button>
             </mat-card-actions>
           </mat-card>
-          <mat-card *ngFor="let lecturer of es.lecturerArray; let i=index" style="max-width: 400px; margin: 1rem;">
+          <mat-card *ngFor="let lecturer of es.lecturerArray |filter:es.searchLecturer ; let i=index" style="max-width: 400px; margin: 1rem;">
             <mat-card-header>
               <mat-card-title></mat-card-title>
               <mat-card-subtitle></mat-card-subtitle>
@@ -184,18 +209,24 @@
             <mat-card-content>
 
               <div *ngIf="!lecturer.edit">
-                <h3>Name :</h3>
-                <p>{{lecturer.lecturerName}}</p>
+                <mat-form-field style="width: 100%;">
+                  <mat-label>Name</mat-label>
+                  <input matInput placeholder="" [(ngModel)]="lecturer.lecturerName" [readonly]="true">
+                </mat-form-field>
               </div>
 
               <div *ngIf="!lecturer.edit">
-                <h3>Academic Program :</h3>
-                <p>{{lecturer.lecturerProgram}}</p>
+                <mat-form-field style="width: 100%;">
+                  <mat-label>Academic Program</mat-label>
+                  <input matInput placeholder="" [(ngModel)]="lecturer.lecturerProgram" [readonly]="true">
+                </mat-form-field>
               </div>
 
               <div *ngIf="!lecturer.edit">
-                <h3>Domain :</h3>
-                <p>{{lecturer.lecturerDomain | titlecase}}</p>
+                <mat-form-field style="width: 100%;">
+                  <mat-label>Domain</mat-label>
+                  <input matInput placeholder="" [(ngModel)]="lecturer.lecturerDomain" [readonly]="true">
+                </mat-form-field>
               </div>
 
               <div *ngIf="lecturer.edit">
@@ -226,8 +257,6 @@
                   </mat-select>
                 </mat-form-field>
 
-
-
               </div>
 
             </mat-card-content>
@@ -239,8 +268,8 @@
             </mat-card-actions>
 
             <mat-card-actions *ngIf="lecturer.edit">
-              <button mat-raised-button color="primary" (click)="es.editLecturerList(i)">Save</button>
               <button mat-raised-button (click)="lecturer.edit = !lecturer.edit">Back</button>
+              <button mat-raised-button color="primary" (click)="es.editLecturerList(i)">Save</button>
             </mat-card-actions>
           </mat-card>
         </div>
@@ -252,11 +281,16 @@
       <div *ngIf="es.currentRole == 'psm-committee' && es.committeeShowStudentPage" style="padding: 1rem; margin: 1rem; background-color: #f1f1f1; display: flex; flex-direction: column; max-width: 90%; height: 100%; width: 100%;overflow-y: scroll; max-height: 75vh;">
         <div style="display: flex; align-items: center;">
           <h1 style="margin: 0;">Student List</h1>
+
+          <div style="max-width: 500px; width: 100%; padding: 0 1rem; margin: 0 1rem; border-radius: 15px; display: flex; flex-direction: row; align-items: center; background-color: #e7ecf1">
+            <mat-icon>search</mat-icon>
+            <input style="max-width: 500px; width: 100%; border-radius: 5px; background-color: #e7ecf1; padding: 1rem;" matInput placeholder="Search" [(ngModel)]="es.searchStudentByCMT">
+          </div>
         </div>
 
 
         <div style="display: flex; align-items: center; flex-wrap: wrap;">
-          <mat-card *ngFor="let student of es.studentArray; let i=index" style="max-width: 400px; margin: 1rem;">
+          <mat-card *ngFor="let student of es.studentArray | filter:es.searchStudentByCMT; let i=index" style="max-width: 400px; margin: 1rem;">
             <mat-card-header>
               <mat-card-title></mat-card-title>
               <mat-card-subtitle></mat-card-subtitle>
@@ -265,13 +299,29 @@
             <mat-card-content>
 
               <div>
-                <h3>Name :</h3>
-                <p>{{student.fullname}}</p>
+                <mat-form-field style="width: 100%;">
+                  <mat-label>Name</mat-label>
+                  <input matInput placeholder="" [(ngModel)]="student.fullname" [readonly]="true">
+                </mat-form-field>
               </div>
 
               <div>
-                <h3>Matric Number :</h3>
-                <p>{{student.matricNumber}}</p>
+                <mat-form-field style="width: 100%;">
+                  <mat-label>Matric Number</mat-label>
+                  <input matInput placeholder="" [(ngModel)]="student.matricNumber" [readonly]="true">
+                </mat-form-field>
+              </div>
+
+              <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                <mat-form-field style="width: 70%;">
+                  <mat-label>Session</mat-label>
+                  <input matInput placeholder="" [(ngModel)]="student.session" [readonly]="true">
+                </mat-form-field>
+
+                <mat-form-field style="width: 30%;">
+                  <mat-label>Semester</mat-label>
+                  <input matInput placeholder="" [(ngModel)]="student.semester" [readonly]="true">
+                </mat-form-field>
               </div>
 
             </mat-card-content>
@@ -288,11 +338,15 @@
       <div *ngIf="es.currentRole == 'psm-committee' && es.committeeShowSupervisorPage" style="padding: 1rem; margin: 1rem; background-color: #f1f1f1; display: flex; flex-direction: column; max-width: 90%; height: 100%; width: 100%;overflow-y: scroll; max-height: 75vh;">
         <div style="display: flex; align-items: center;">
           <h1 style="margin: 0;">Supervisor Application</h1>
+          <div style="max-width: 500px; width: 100%; padding: 0 1rem; margin: 0 1rem; border-radius: 15px; display: flex; flex-direction: row; align-items: center; background-color: #e7ecf1">
+            <mat-icon>search</mat-icon>
+            <input style="max-width: 500px; width: 100%; border-radius: 5px; background-color: #e7ecf1; padding: 1rem;" matInput placeholder="Search" [(ngModel)]="es.searchSupervisorApplicationByCMT">
+          </div>
         </div>
 
 
         <div style="display: flex; align-items: center; flex-wrap: wrap;">
-          <mat-card *ngFor="let application of es.applicationArray; let i=index" style="max-width: 400px; margin: 1rem;">
+          <mat-card *ngFor="let application of es.applicationArray | filter:es.searchSupervisorApplicationByCMT; let i=index" style="max-width: 400px; margin: 1rem;">
             <mat-card-header>
               <mat-card-title></mat-card-title>
               <mat-card-subtitle></mat-card-subtitle>
@@ -314,42 +368,66 @@
                 <h3>Time : {{application.applicationTimestamp.toDate() | date: 'dd MMM yyyy h:mm:ss a' }}</h3>
               </div>
 
-              <hr>
+              
+              <mat-accordion>
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      Student Information
+                    </mat-panel-title>
+                    <mat-panel-description>
+                      {{application.applicationStudent.fullname}}
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
 
-              <div>
-                <h3><strong>Student Information</strong></h3>
-              </div>
+                  <div>
+                    <h3>Name :</h3>
+                    <p>{{application.applicationStudent.fullname}}</p>
+                  </div>
 
-              <div>
-                <h3>Name :</h3>
-                <p>{{application.applicationStudent.fullname}}</p>
-              </div>
+                  <div>
+                    <h3>Matric Number :</h3>
+                    <p>{{application.applicationStudent.matricNumber}}</p>
+                  </div>
 
-              <div>
-                <h3>Matric Number :</h3>
-                <p>{{application.applicationStudent.matricNumber}}</p>
-              </div>
+                </mat-expansion-panel>
 
-              <hr>
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      Supervisor Information
+                    </mat-panel-title>
+                    <mat-panel-description>
+                      {{application.applicationSupervisor.lecturerName}}
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
 
-              <div>
-                <h3><strong>Supervisor Information</strong></h3>
-              </div>
+                  <div>
+                    <h3>Name :</h3>
+                    <p>{{application.applicationSupervisor.lecturerName}}</p>
+                  </div>
 
-              <div>
-                <h3>Name :</h3>
-                <p>{{application.applicationSupervisor.lecturerName}}</p>
-              </div>
+                  <div>
+                    <h3>Program :</h3>
+                    <p>{{application.applicationSupervisor.lecturerProgram}}</p>
+                  </div>
 
-              <div>
-                <h3>Program :</h3>
-                <p>{{application.applicationSupervisor.lecturerProgram}}</p>
-              </div>
+                  <div>
+                    <h3>Domain :</h3>
+                    <p>{{application.applicationSupervisor.lecturerDomain | titlecase}}</p>
+                  </div>
 
-              <div>
-                <h3>Domain :</h3>
-                <p>{{application.applicationSupervisor.lecturerDomain | titlecase}}</p>
-              </div>
+                </mat-expansion-panel>
+
+
+              </mat-accordion>
+
+
+
+
+
+              
+
 
 
 
@@ -420,7 +498,7 @@
                 <p>{{proposal.proposalStatus.split('-')[1] | titlecase }}</p>
               </div>
 
-              
+
 
 
 
@@ -815,7 +893,7 @@
 
     </div>
 
-    
+
 
     <div *ngIf="es.lecturerShowEvaluatorPage" style="padding: 1rem; margin: 1rem; background-color: #f1f1f1; display: flex; flex-direction: column; max-width: 90%; height: 100%; width: 100%;overflow-y: scroll; max-height: 75vh;">
 
@@ -957,7 +1035,7 @@
 
     </div>
 
-    
+
 
   </div>
 
@@ -1272,7 +1350,7 @@
   </div>
 
 
-  
+
 
 
 

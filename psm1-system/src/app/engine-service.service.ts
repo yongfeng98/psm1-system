@@ -5,6 +5,7 @@ import * as CryptoJS from 'crypto-js';
 import { combineLatest } from 'rxjs';
 import * as moment from 'moment';
 import { AngularFireStorage } from '@angular/fire/storage';
+import { NgSearchFilterService } from 'ng-search-filter';
 
 @Injectable({
 	providedIn: 'root'
@@ -133,12 +134,18 @@ export class EngineServiceService {
 	studentShowApplicationPage : boolean = true;
 	studentShowProposalPage : boolean = false;
 
+	searchLecturer : any = ''
+	searchStudentByCMT : any = ''
+	searchSupervisorApplicationByCMT : any = ''
+
 	constructor(
 		private afs:AngularFirestore,
 		private _snackBar: MatSnackBar,
-		private fireStorage: AngularFireStorage
+		private fireStorage: AngularFireStorage,
+		private _ngSearchFilterService: NgSearchFilterService
 		) {
 
+		this._ngSearchFilterService.setDefaultLang('en');
 
 		const user = window.localStorage.getItem('user')
 		if(user) {
