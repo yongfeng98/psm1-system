@@ -137,6 +137,10 @@ export class EngineServiceService {
 	searchLecturer : any = ''
 	searchStudentByCMT : any = ''
 	searchSupervisorApplicationByCMT : any = ''
+	searchProposalByCMT : any = ''
+	searchStudentByLect : any = ''
+	searchProposalBySupervisor : any = ''
+	searchProposalByEvaluator : any = ''
 
 	constructor(
 		private afs:AngularFirestore,
@@ -262,8 +266,32 @@ export class EngineServiceService {
 
 	readStudentProposal() {
 		return new Promise((resolve:any) => {
-			this.afs.collection('student-proposal', ref => ref.where('proposalStudent','==',this.currentUser.studentId).orderBy('proposalTimestamp','desc')).valueChanges({idField:'proposalId'}).subscribe((proposalArray) => {
+			this.afs.collection('student-proposal', ref => ref.where('proposalStudent','==',this.currentUser.studentId).orderBy('proposalTimestamp','desc')).valueChanges({idField:'proposalId'}).subscribe((proposalArray:any) => {
 				this.studentProposalArray = [];
+				
+
+
+				for(let proposal of proposalArray) {
+
+					for(let supervisor of this.lecturerArray) {
+						if(supervisor.lecturerId == proposal.proposalSupervisor) {
+							proposal.proposalSupervisor = supervisor;
+						}
+					}
+
+					for(let eva1 of this.lecturerArray) {
+						if(eva1.lecturerId == proposal.proposalEvaluator1) {
+							proposal.proposalEvaluator1 = eva1;
+						}
+					}
+
+					for(let eva2 of this.lecturerArray) {
+						if(eva2.lecturerId == proposal.proposalEvaluator2) {
+							proposal.proposalEvaluator2 = eva2;
+						}
+					}
+				}
+
 				this.studentProposalArray = proposalArray;
 
 				resolve(true);
