@@ -233,13 +233,13 @@
 
                 <mat-form-field style="width: 100%;">
                   <mat-label>Name</mat-label>
-                  <input matInput placeholder="" [(ngModel)]="es.editLecturer[i].lecturerName">
+                  <input matInput placeholder="" [(ngModel)]="es.editLecturer[i].lecturerName" [readonly]="es.currentRole == 'psm-committee'">
                 </mat-form-field>
 
                 <mat-form-field appearance="fill">
                   <mat-label>Academic Program</mat-label>
-                  <mat-select [(ngModel)]="es.editLecturer[i].lecturerProgram">
-                    <mat-option *ngFor="let program of es.programArray" [value]="program.programName">
+                  <mat-select [(ngModel)]="es.editLecturer[i].lecturerProgram" [disabled]="es.currentRole == 'psm-committee'">
+                    <mat-option *ngFor="let program of es.programArray" [value]="program.programName" >
                       {{program.programName}}
                     </mat-option>
                   </mat-select>
@@ -262,9 +262,9 @@
             </mat-card-content>
             <mat-card-actions *ngIf="!lecturer.edit">
               <button mat-raised-button (click)="lecturer.edit = !lecturer.edit">Edit</button>
-              <button mat-raised-button color="primary" *ngIf="lecturer.lecturerRole == 'lecturer'" (click)="es.assignCommittee(lecturer)">Assign As PSM Committee</button>
-              <button mat-raised-button color="warn" *ngIf="lecturer.lecturerRole == 'psm-committee'" (click)="es.unassignCommittee(lecturer)">Remove From PSM Committee</button>
-              <button mat-raised-button color="warn" (click)="es.deleteLecturer(lecturer)">Delete</button>
+              <button mat-raised-button color="primary" *ngIf="lecturer.lecturerRole == 'lecturer' && es.currentRole == 'admin'" (click)="es.assignCommittee(lecturer)">Assign As PSM Committee</button>
+              <button mat-raised-button color="warn" *ngIf="lecturer.lecturerRole == 'psm-committee' && es.currentRole == 'admin'" (click)="es.unassignCommittee(lecturer)">Remove From PSM Committee</button>
+              <button mat-raised-button color="warn" *ngIf="es.currentRole == 'admin'"  (click)="es.deleteLecturer(lecturer)">Delete</button>
             </mat-card-actions>
 
             <mat-card-actions *ngIf="lecturer.edit">
@@ -1409,7 +1409,7 @@
 
         <mat-card *ngFor="let proposal of es.studentProposalArray; let i=index" style="max-width: 400px; margin: 1rem; width: 100%; height: 100%;">
           <mat-card-header>
-            <mat-card-title style="padding-bottom: 1rem;">{{proposal.proposalTitle}}</mat-card-title>
+            <mat-card-title>{{proposal.proposalTitle}}</mat-card-title>
             <mat-card-subtitle>{{proposal.proposalStatus.split('-')[1] | titlecase }}</mat-card-subtitle>
           </mat-card-header>
 

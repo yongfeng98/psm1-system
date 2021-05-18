@@ -666,6 +666,7 @@ export class EngineServiceService {
 		this.currentRole = null;
 		window.localStorage.removeItem("user");
 		this.loggedIn = !this.loggedIn;
+		location.reload();
 	}
 
 	readAcademicProgram() {
@@ -1164,7 +1165,9 @@ export class EngineServiceService {
 		if(res) {
 			this.afs.doc(`student-proposal/${proposal.proposalId}`).update({
 				proposalEvaluator1: this.assignEva[index].eva1,
+				proposalEvaluatorComment1: '',
 				proposalEvaluator2: this.assignEva[index].eva2,
+				proposalEvaluatorComment2: '',
 			}).then(() => {
 				this.openSnackBar('Evaluator Recorded.','Dismiss');
 			})
